@@ -6,66 +6,53 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import com.sefa.jobtrackerapi.service.JobApplicationService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/applications")
 public class JobApplicationController {
-    private final List<JobApplication> applications = new ArrayList<>();
-    private long nextId = 3L;
-
-    public JobApplicationController() {
-
-        JobApplication firstApplication = new JobApplication();
-        firstApplication.setId(1L);
-        firstApplication.setCompany("Example Technology");
-        firstApplication.setPosition("Junior Software Engineer");
-        firstApplication.setStatus("APPLIED");
-
-        JobApplication secondApplication = new JobApplication();
-        secondApplication.setId(2L);
-        secondApplication.setCompany("Sample Bank");
-        secondApplication.setPosition("Java Developer");
-        secondApplication.setStatus("INTERVIEW");
-
-        applications.add(firstApplication);
-        applications.add(secondApplication);
+    private final JobApplicationService jobApplicationService;
+    public JobApplicationController(
+            JobApplicationService jobApplicationService
+    ) {
+        this.jobApplicationService = jobApplicationService;
     }
+
+
 
     @GetMapping
     public List<JobApplication> getApplications() {
-        return applications;
+        return jobApplicationService.getAllApplications();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<JobApplication> getApplicationById(
             @PathVariable Long id
     ) {
-        for (JobApplication application : applications) {
+        JobApplication application =
+                jobApplicationService.getApplicationById(id);
 
-            if (application.getId().equals(id)) {
-                return ResponseEntity.ok(application);
-            }
+        if (application == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(application);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteApplication(
             @PathVariable Long id
     ) {
-        for (JobApplication application : applications) {
+        boolean deleted =
+                jobApplicationService.deleteApplication(id);
 
-            if (application.getId().equals(id)) {
-                applications.remove(application);
-                return ResponseEntity.noContent().build();
-            }
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
@@ -73,12 +60,7 @@ public class JobApplicationController {
     public JobApplication createApplication(
             @RequestBody JobApplication application
     ) {
-        application.setId(nextId);
-        nextId++;
-
-        applications.add(application);
-
-        return application;
+        return jobApplicationService.createApplication(application);
     }
 
     @PutMapping("/{id}")
@@ -86,18 +68,17 @@ public class JobApplicationController {
             @PathVariable Long id,
             @RequestBody JobApplication updatedApplication
     ) {
-        for (JobApplication application : applications) {
+        JobApplication application =
+                jobApplicationService.updateApplication(
+                        id,
+                        updatedApplication
+                );
 
-            if (application.getId().equals(id)) {
-                application.setCompany(updatedApplication.getCompany());
-                application.setPosition(updatedApplication.getPosition());
-                application.setStatus(updatedApplication.getStatus());
-
-                return ResponseEntity.ok(application);
-            }
+        if (application == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(application);
     }
 
     @GetMapping("/test")
