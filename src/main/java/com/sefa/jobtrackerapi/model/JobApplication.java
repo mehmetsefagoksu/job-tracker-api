@@ -7,8 +7,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "job_applications")
@@ -28,12 +31,10 @@ public class JobApplication {
     @Size(max = 100, message = "Pozisyon en fazla 100 karakter olabilir")
     private String position;
 
-    @NotBlank(message = "Durum boş olamaz")
-    @Pattern(
-            regexp = "APPLIED|INTERVIEW|OFFER|REJECTED",
-            message = "Durum APPLIED, INTERVIEW, OFFER veya REJECTED olmalıdır"
-    )
-    private String status;
+    @NotNull(message = "Durum boş olamaz")
+    @Enumerated(EnumType.STRING)
+    private JobApplicationStatus status;
+
 
     public Long getId() {
         return id;
@@ -59,11 +60,11 @@ public class JobApplication {
         this.position = position;
     }
 
-    public String getStatus() {
+    public JobApplicationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(JobApplicationStatus status) {
         this.status = status;
     }
 }
