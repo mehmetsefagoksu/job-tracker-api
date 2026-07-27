@@ -5,6 +5,7 @@ import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
 
 @Service
 public class JobApplicationService {
@@ -24,7 +25,7 @@ public class JobApplicationService {
     public JobApplication getApplicationById(Long id) {
         return jobApplicationRepository
                 .findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public JobApplication createApplication(
@@ -42,10 +43,6 @@ public class JobApplicationService {
         JobApplication existingApplication =
                 getApplicationById(id);
 
-        if (existingApplication == null) {
-            return null;
-        }
-
         existingApplication.setCompany(
                 updatedApplication.getCompany()
         );
@@ -61,13 +58,10 @@ public class JobApplicationService {
         );
     }
 
-    public boolean deleteApplication(Long id) {
-        if (!jobApplicationRepository.existsById(id)) {
-            return false;
-        }
+    public void deleteApplication(Long id) {
+        JobApplication existingApplication =
+                getApplicationById(id);
 
-        jobApplicationRepository.deleteById(id);
-
-        return true;
+        jobApplicationRepository.delete(existingApplication);
     }
 }

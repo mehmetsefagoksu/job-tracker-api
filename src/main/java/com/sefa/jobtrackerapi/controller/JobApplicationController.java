@@ -33,26 +33,16 @@ public class JobApplicationController {
     public ResponseEntity<JobApplication> getApplicationById(
             @PathVariable Long id
     ) {
-        JobApplication application =
-                jobApplicationService.getApplicationById(id);
-
-        if (application == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(application);
+        return ResponseEntity.ok(
+                jobApplicationService.getApplicationById(id)
+        );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteApplication(
             @PathVariable Long id
     ) {
-        boolean deleted =
-                jobApplicationService.deleteApplication(id);
-
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
+        jobApplicationService.deleteApplication(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -70,17 +60,12 @@ public class JobApplicationController {
             @PathVariable Long id,
             @Valid @RequestBody JobApplication updatedApplication
     ) {
-        JobApplication application =
+        return ResponseEntity.ok(
                 jobApplicationService.updateApplication(
                         id,
                         updatedApplication
-                );
-
-        if (application == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(application);
+                )
+        );
     }
 
     @GetMapping("/test")
