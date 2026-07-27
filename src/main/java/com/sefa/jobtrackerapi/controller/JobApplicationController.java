@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.sefa.jobtrackerapi.service.JobApplicationService;
 import jakarta.validation.Valid;
+import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 
 import java.util.List;
@@ -48,23 +49,24 @@ public class JobApplicationController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public JobApplication createApplication(
-            @Valid @RequestBody JobApplication application
+    public ResponseEntity<JobApplication> createApplication(
+            @Valid @RequestBody JobApplicationRequest request
     ) {
-        return jobApplicationService.createApplication(application);
+        JobApplication createdApplication =
+                jobApplicationService.createApplication(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdApplication);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<JobApplication> updateApplication(
             @PathVariable Long id,
-            @Valid @RequestBody JobApplication updatedApplication
+            @Valid @RequestBody JobApplicationRequest request
     ) {
         return ResponseEntity.ok(
-                jobApplicationService.updateApplication(
-                        id,
-                        updatedApplication
-                )
+                jobApplicationService.updateApplication(id, request)
         );
     }
 

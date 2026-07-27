@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
+import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 @Service
 public class JobApplicationService {
@@ -29,29 +30,27 @@ public class JobApplicationService {
     }
 
     public JobApplication createApplication(
-            JobApplication application
+            JobApplicationRequest request
     ) {
-        application.setId(null);
+        JobApplication application = new JobApplication();
+
+        application.setCompany(request.company());
+        application.setPosition(request.position());
+        application.setStatus(request.status());
 
         return jobApplicationRepository.save(application);
     }
 
     public JobApplication updateApplication(
             Long id,
-            JobApplication updatedApplication
+            JobApplicationRequest request
     ) {
         JobApplication existingApplication =
                 getApplicationById(id);
 
-        existingApplication.setCompany(
-                updatedApplication.getCompany()
-        );
-        existingApplication.setPosition(
-                updatedApplication.getPosition()
-        );
-        existingApplication.setStatus(
-                updatedApplication.getStatus()
-        );
+        existingApplication.setCompany(request.company());
+        existingApplication.setPosition(request.position());
+        existingApplication.setStatus(request.status());
 
         return jobApplicationRepository.save(
                 existingApplication
