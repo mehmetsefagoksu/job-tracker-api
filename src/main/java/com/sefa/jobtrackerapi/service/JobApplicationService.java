@@ -5,12 +5,14 @@ import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class JobApplicationService {
@@ -23,21 +25,20 @@ public class JobApplicationService {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    public List<JobApplicationResponse> getAllApplications(
-            JobApplicationStatus status
+    public Page<JobApplicationResponse> getAllApplications(
+            JobApplicationStatus status,
+            Pageable pageable
     ) {
-        List<JobApplication> applications;
+        Page<JobApplication> applications;
 
         if (status == null) {
-            applications = jobApplicationRepository.findAll();
+            applications = jobApplicationRepository.findAll(pageable);
         } else {
-            applications = jobApplicationRepository.findByStatus(status);
+            applications =
+                    jobApplicationRepository.findByStatus(status, pageable);
         }
 
-        return applications
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return applications.map(this::toResponse);
     }
 
     private JobApplication findApplicationById(Long id) {

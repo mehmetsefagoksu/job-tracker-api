@@ -10,6 +10,8 @@ import com.sefa.jobtrackerapi.service.JobApplicationService;
 import jakarta.validation.Valid;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,11 +31,15 @@ public class JobApplicationController {
 
 
     @GetMapping
-    public List<JobApplicationResponse> getAllApplications(
+    public Page<JobApplicationResponse> getAllApplications(
             @RequestParam(required = false)
-            JobApplicationStatus status
+            JobApplicationStatus status,
+            Pageable pageable
     ) {
-        return jobApplicationService.getAllApplications(status);
+        return jobApplicationService.getAllApplications(
+                status,
+                pageable
+        );
     }
 
     @GetMapping("/{id}")
