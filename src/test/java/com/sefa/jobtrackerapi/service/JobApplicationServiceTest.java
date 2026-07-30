@@ -1,0 +1,67 @@
+package com.sefa.jobtrackerapi.service;
+
+import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+import com.sefa.jobtrackerapi.model.JobApplication;
+import com.sefa.jobtrackerapi.model.JobApplicationStatus;
+import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class JobApplicationServiceTest {
+
+    @Mock
+    private JobApplicationRepository jobApplicationRepository;
+
+    @InjectMocks
+    private JobApplicationService jobApplicationService;
+
+    @Test
+    void shouldReturnApplicationWhenIdExists() {
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setCompany("Garanti BBVA Teknoloji");
+        application.setPosition("Java Backend Developer");
+        application.setStatus(JobApplicationStatus.APPLIED);
+        application.setApplicationDate(LocalDate.of(2026, 7, 30));
+
+        when(jobApplicationRepository.findById(1L))
+                .thenReturn(Optional.of(application));
+
+        JobApplicationResponse response =
+                jobApplicationService.getApplicationById(1L);
+
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.company())
+                .isEqualTo("Garanti BBVA Teknoloji");
+        assertThat(response.position())
+                .isEqualTo("Java Backend Developer");
+        assertThat(response.status())
+                .isEqualTo(JobApplicationStatus.APPLIED);
+        assertThat(response.applicationDate())
+                .isEqualTo(LocalDate.of(2026, 7, 30));
+    }
+    @Test
+    void shouldThrowExceptionWhenIdDoesNotExist() {
+        when(jobApplicationRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+                () -> jobApplicationService.getApplicationById(99L)
+        )
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("ID 99 olan iş başvurusu bulunamadı");
+    }
+}
