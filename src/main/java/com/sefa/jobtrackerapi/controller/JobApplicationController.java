@@ -87,9 +87,4 @@ public class JobApplicationController {
                 jobApplicationService.updateApplication(id, request)
         );
     }
-
-    @GetMapping("/test")
-    public String testApi() {
-        return "Job Tracker API çalışıyor.";
-    }
 }
