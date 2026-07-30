@@ -20,6 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+
+import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
+
+
 @WebMvcTest(JobApplicationController.class)
 class JobApplicationControllerTest {
 
@@ -77,5 +81,19 @@ class JobApplicationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.company")
                         .value("Şirket adı boş olamaz"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenApplicationDoesNotExist() throws Exception {
+        when(jobApplicationService.getApplicationById(99L))
+                .thenThrow(new ResourceNotFoundException(99L));
+
+        mockMvc.perform(get("/applications/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON
+                ))
+                .andExpect(jsonPath("$.message")
+                        .value("ID 99 olan iş başvurusu bulunamadı"));
     }
 }
