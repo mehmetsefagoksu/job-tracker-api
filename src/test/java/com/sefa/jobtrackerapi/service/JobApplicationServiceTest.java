@@ -122,4 +122,44 @@ class JobApplicationServiceTest {
         verify(jobApplicationRepository).findById(1L);
         verify(jobApplicationRepository).delete(application);
     }
+
+    @Test
+    void shouldUpdateApplicationWhenIdExists() {
+        JobApplication existingApplication = new JobApplication();
+        existingApplication.setId(1L);
+        existingApplication.setCompany("Eski Şirket");
+        existingApplication.setPosition("Junior Developer");
+        existingApplication.setStatus(JobApplicationStatus.APPLIED);
+        existingApplication.setApplicationDate(
+                LocalDate.of(2026, 7, 20)
+        );
+
+        JobApplicationRequest request =
+                new JobApplicationRequest(
+                        "Yeni Şirket",
+                        "Backend Developer",
+                        JobApplicationStatus.INTERVIEW,
+                        LocalDate.of(2026, 7, 30)
+                );
+
+        when(jobApplicationRepository.findById(1L))
+                .thenReturn(Optional.of(existingApplication));
+
+        when(jobApplicationRepository.save(existingApplication))
+                .thenReturn(existingApplication);
+
+        JobApplicationResponse response =
+                jobApplicationService.updateApplication(1L, request);
+
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.company()).isEqualTo("Yeni Şirket");
+        assertThat(response.position()).isEqualTo("Backend Developer");
+        assertThat(response.status())
+                .isEqualTo(JobApplicationStatus.INTERVIEW);
+        assertThat(response.applicationDate())
+                .isEqualTo(LocalDate.of(2026, 7, 30));
+
+        verify(jobApplicationRepository).findById(1L);
+        verify(jobApplicationRepository).save(existingApplication);
+    }
 }
