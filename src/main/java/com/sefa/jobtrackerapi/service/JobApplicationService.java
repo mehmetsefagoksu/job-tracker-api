@@ -1,6 +1,7 @@
 package com.sefa.jobtrackerapi.service;
 
 import com.sefa.jobtrackerapi.model.JobApplication;
+import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 
 @Service
 public class JobApplicationService {
@@ -21,9 +23,18 @@ public class JobApplicationService {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    public List<JobApplicationResponse> getAllApplications() {
-        return jobApplicationRepository
-                .findAll()
+    public List<JobApplicationResponse> getAllApplications(
+            JobApplicationStatus status
+    ) {
+        List<JobApplication> applications;
+
+        if (status == null) {
+            applications = jobApplicationRepository.findAll();
+        } else {
+            applications = jobApplicationRepository.findByStatus(status);
+        }
+
+        return applications
                 .stream()
                 .map(this::toResponse)
                 .toList();

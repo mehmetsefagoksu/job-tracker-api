@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
 
+import com.sefa.jobtrackerapi.model.JobApplicationStatus;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @RestController
@@ -26,8 +29,11 @@ public class JobApplicationController {
 
 
     @GetMapping
-    public List<JobApplicationResponse> getAllApplications() {
-        return jobApplicationService.getAllApplications();
+    public List<JobApplicationResponse> getAllApplications(
+            @RequestParam(required = false)
+            JobApplicationStatus status
+    ) {
+        return jobApplicationService.getAllApplications(status);
     }
 
     @GetMapping("/{id}")
