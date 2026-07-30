@@ -28,7 +28,8 @@ import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @WebMvcTest(JobApplicationController.class)
 class JobApplicationControllerTest {
@@ -184,5 +185,13 @@ class JobApplicationControllerTest {
                         .value("INTERVIEW"))
                 .andExpect(jsonPath("$.applicationDate")
                         .value("2026-07-30"));
+    }
+    @Test
+    void shouldDeleteApplication() throws Exception {
+        mockMvc.perform(delete("/applications/1"))
+                .andExpect(status().isNoContent());
+
+        verify(jobApplicationService)
+                .deleteApplication(1L);
     }
 }
