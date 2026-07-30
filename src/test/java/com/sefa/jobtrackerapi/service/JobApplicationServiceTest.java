@@ -18,6 +18,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
+import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class JobApplicationServiceTest {
@@ -63,5 +67,40 @@ class JobApplicationServiceTest {
         )
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("ID 99 olan iş başvurusu bulunamadı");
+    }
+
+    @Test
+    void shouldCreateApplication() {
+        JobApplicationRequest request =
+                new JobApplicationRequest(
+                        "Trendyol",
+                        "Java Backend Developer",
+                        JobApplicationStatus.APPLIED,
+                        LocalDate.of(2026, 7, 30)
+                );
+
+        when(jobApplicationRepository.save(any(JobApplication.class)))
+                .thenAnswer(invocation -> {
+                    JobApplication savedApplication =
+                            invocation.getArgument(0);
+
+                    savedApplication.setId(10L);
+                    return savedApplication;
+                });
+
+        JobApplicationResponse response =
+                jobApplicationService.createApplication(request);
+
+        assertThat(response.id()).isEqualTo(10L);
+        assertThat(response.company()).isEqualTo("Trendyol");
+        assertThat(response.position())
+                .isEqualTo("Java Backend Developer");
+        assertThat(response.status())
+                .isEqualTo(JobApplicationStatus.APPLIED);
+        assertThat(response.applicationDate())
+                .isEqualTo(LocalDate.of(2026, 7, 30));
+
+        verify(jobApplicationRepository)
+                .save(any(JobApplication.class));
     }
 }
