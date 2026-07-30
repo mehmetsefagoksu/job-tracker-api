@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.sefa.jobtrackerapi.service.JobApplicationService;
 import jakarta.validation.Valid;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
-
+import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
 
 import java.util.List;
 
@@ -26,12 +26,12 @@ public class JobApplicationController {
 
 
     @GetMapping
-    public List<JobApplication> getApplications() {
+    public List<JobApplicationResponse> getAllApplications() {
         return jobApplicationService.getAllApplications();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobApplication> getApplicationById(
+    public ResponseEntity<JobApplicationResponse> getApplicationById(
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(
@@ -49,10 +49,10 @@ public class JobApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<JobApplication> createApplication(
+    public ResponseEntity<JobApplicationResponse> createApplication(
             @Valid @RequestBody JobApplicationRequest request
     ) {
-        JobApplication createdApplication =
+        JobApplicationResponse createdApplication =
                 jobApplicationService.createApplication(request);
 
         return ResponseEntity
@@ -61,7 +61,7 @@ public class JobApplicationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplication> updateApplication(
+    public ResponseEntity<JobApplicationResponse> updateApplication(
             @PathVariable Long id,
             @Valid @RequestBody JobApplicationRequest request
     ) {

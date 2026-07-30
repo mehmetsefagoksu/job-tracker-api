@@ -8,6 +8,8 @@ import java.util.List;
 import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
+import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+
 @Service
 public class JobApplicationService {
 
@@ -19,17 +21,27 @@ public class JobApplicationService {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    public List<JobApplication> getAllApplications() {
-        return jobApplicationRepository.findAll();
+    public List<JobApplicationResponse> getAllApplications() {
+        return jobApplicationRepository
+                .findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public JobApplication getApplicationById(Long id) {
+    private JobApplication findApplicationById(Long id) {
         return jobApplicationRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public JobApplication createApplication(
+    public JobApplicationResponse getApplicationById(Long id) {
+        JobApplication application = findApplicationById(id);
+
+        return toResponse(application);
+    }
+
+    public JobApplicationResponse createApplication(
             JobApplicationRequest request
     ) {
         JobApplication application = new JobApplication();
@@ -38,29 +50,44 @@ public class JobApplicationService {
         application.setPosition(request.position());
         application.setStatus(request.status());
 
-        return jobApplicationRepository.save(application);
+        JobApplication savedApplication =
+                jobApplicationRepository.save(application);
+
+        return toResponse(savedApplication);
     }
 
-    public JobApplication updateApplication(
+    public JobApplicationResponse updateApplication(
             Long id,
             JobApplicationRequest request
     ) {
         JobApplication existingApplication =
-                getApplicationById(id);
+                findApplicationById(id);
 
         existingApplication.setCompany(request.company());
         existingApplication.setPosition(request.position());
         existingApplication.setStatus(request.status());
 
-        return jobApplicationRepository.save(
-                existingApplication
-        );
+        JobApplication updatedApplication =
+                jobApplicationRepository.save(existingApplication);
+
+        return toResponse(updatedApplication);
     }
 
     public void deleteApplication(Long id) {
         JobApplication existingApplication =
-                getApplicationById(id);
+                findApplicationById(id);
 
         jobApplicationRepository.delete(existingApplication);
+    }
+
+    private JobApplicationResponse toResponse(
+            JobApplication application
+    ) {
+        return new JobApplicationResponse(
+                application.getId(),
+                application.getCompany(),
+                application.getPosition(),
+                application.getStatus()
+        );
     }
 }
