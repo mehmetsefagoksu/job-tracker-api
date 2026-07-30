@@ -4,6 +4,7 @@ import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 
 public record JobApplicationRequest(
 
@@ -22,7 +23,10 @@ public record JobApplicationRequest(
         String position,
 
         @NotNull(message = "Durum boş olamaz")
-        JobApplicationStatus status
+        JobApplicationStatus status,
+
+        @NotNull(message = "Başvuru tarihi boş olamaz")
+                LocalDate applicationDate
 
 ) {
 }

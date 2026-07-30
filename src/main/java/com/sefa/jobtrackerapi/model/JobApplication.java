@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "job_applications")
@@ -26,6 +27,9 @@ public class JobApplication {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobApplicationStatus status;
+
+    @Column(name = "application_date")
+    private LocalDate applicationDate;
 
     public JobApplication() {
     }
@@ -60,5 +64,13 @@ public class JobApplication {
 
     public void setStatus(JobApplicationStatus status) {
         this.status = status;
+    }
+
+    public LocalDate getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+        this.applicationDate = applicationDate;
     }
 }

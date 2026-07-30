@@ -49,6 +49,7 @@ public class JobApplicationService {
         application.setCompany(request.company());
         application.setPosition(request.position());
         application.setStatus(request.status());
+        application.setApplicationDate(request.applicationDate());
 
         JobApplication savedApplication =
                 jobApplicationRepository.save(application);
@@ -66,6 +67,7 @@ public class JobApplicationService {
         existingApplication.setCompany(request.company());
         existingApplication.setPosition(request.position());
         existingApplication.setStatus(request.status());
+        existingApplication.setApplicationDate(request.applicationDate());
 
         JobApplication updatedApplication =
                 jobApplicationRepository.save(existingApplication);
@@ -87,7 +89,8 @@ public class JobApplicationService {
                 application.getId(),
                 application.getCompany(),
                 application.getPosition(),
-                application.getStatus()
+                application.getStatus(),
+                application.getApplicationDate()
         );
     }
 }
