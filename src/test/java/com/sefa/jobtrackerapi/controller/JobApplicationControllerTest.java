@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 @WebMvcTest(JobApplicationController.class)
 class JobApplicationControllerTest {
 
@@ -55,5 +57,25 @@ class JobApplicationControllerTest {
                         .value("APPLIED"))
                 .andExpect(jsonPath("$.applicationDate")
                         .value("2026-07-30"));
+    }
+    @Test
+    void shouldReturnBadRequestWhenCompanyIsBlank() throws Exception {
+        String requestBody = """
+            {
+              "company": "",
+              "position": "Java Backend Developer",
+              "status": "APPLIED",
+              "applicationDate": "2026-07-30"
+            }
+            """;
+
+        mockMvc.perform(
+                        post("/applications")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.company")
+                        .value("Şirket adı boş olamaz"));
     }
 }
