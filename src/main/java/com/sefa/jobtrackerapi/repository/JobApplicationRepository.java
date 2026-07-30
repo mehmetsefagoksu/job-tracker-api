@@ -13,4 +13,15 @@ public interface JobApplicationRepository
             JobApplicationStatus status,
             Pageable pageable
     );
+
+    Page<JobApplication> findByCompanyContainingIgnoreCase(
+            String company,
+            Pageable pageable
+    );
+
+    Page<JobApplication> findByStatusAndCompanyContainingIgnoreCase(
+            JobApplicationStatus status,
+            String company,
+            Pageable pageable
+    );
 }

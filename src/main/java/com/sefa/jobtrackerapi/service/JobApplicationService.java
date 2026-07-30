@@ -13,6 +13,7 @@ import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.sefa.jobtrackerapi.dto.PageResponse;
 
 @Service
 public class JobApplicationService {
@@ -25,20 +26,54 @@ public class JobApplicationService {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    public Page<JobApplicationResponse> getAllApplications(
+    public PageResponse<JobApplicationResponse> getAllApplications(
             JobApplicationStatus status,
+            String company,
             Pageable pageable
     ) {
         Page<JobApplication> applications;
 
-        if (status == null) {
-            applications = jobApplicationRepository.findAll(pageable);
+        boolean hasCompany =
+                company != null && !company.isBlank();
+
+        if (status != null && hasCompany) {
+            applications =
+                    jobApplicationRepository
+                            .findByStatusAndCompanyContainingIgnoreCase(
+                                    status,
+                                    company.trim(),
+                                    pageable
+                            );
+        } else if (status != null) {
+            applications =
+                    jobApplicationRepository.findByStatus(
+                            status,
+                            pageable
+                    );
+        } else if (hasCompany) {
+            applications =
+                    jobApplicationRepository
+                            .findByCompanyContainingIgnoreCase(
+                                    company.trim(),
+                                    pageable
+                            );
         } else {
             applications =
-                    jobApplicationRepository.findByStatus(status, pageable);
+                    jobApplicationRepository.findAll(pageable);
         }
 
-        return applications.map(this::toResponse);
+        Page<JobApplicationResponse> responsePage =
+                applications.map(this::toResponse);
+
+        return new PageResponse<>(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements(),
+                responsePage.getTotalPages(),
+                responsePage.isFirst(),
+                responsePage.isLast()
+        );
     }
 
     private JobApplication findApplicationById(Long id) {

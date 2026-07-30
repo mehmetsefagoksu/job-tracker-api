@@ -1,5 +1,6 @@
 package com.sefa.jobtrackerapi.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import com.sefa.jobtrackerapi.model.JobApplication;
 import org.springframework.http.HttpStatus;
@@ -10,11 +11,11 @@ import com.sefa.jobtrackerapi.service.JobApplicationService;
 import jakarta.validation.Valid;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.sefa.jobtrackerapi.dto.PageResponse;
 
 import java.util.List;
 
@@ -31,13 +32,18 @@ public class JobApplicationController {
 
 
     @GetMapping
-    public Page<JobApplicationResponse> getAllApplications(
+    public PageResponse<JobApplicationResponse> getAllApplications(
             @RequestParam(required = false)
             JobApplicationStatus status,
+
+            @RequestParam(required = false)
+            String company,
+
             Pageable pageable
     ) {
         return jobApplicationService.getAllApplications(
                 status,
+                company,
                 pageable
         );
     }
