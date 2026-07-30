@@ -26,6 +26,7 @@ import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 
 
@@ -140,6 +141,47 @@ class JobApplicationControllerTest {
                 .andExpect(jsonPath("$.position")
                         .value("Java Backend Developer"))
                 .andExpect(jsonPath("$.status").value("APPLIED"))
+                .andExpect(jsonPath("$.applicationDate")
+                        .value("2026-07-30"));
+    }
+
+    @Test
+    void shouldUpdateApplication() throws Exception {
+        JobApplicationResponse response =
+                new JobApplicationResponse(
+                        1L,
+                        "Trendyol",
+                        "Backend Developer",
+                        JobApplicationStatus.INTERVIEW,
+                        LocalDate.of(2026, 7, 30)
+                );
+
+        when(jobApplicationService.updateApplication(
+                org.mockito.ArgumentMatchers.eq(1L),
+                any(JobApplicationRequest.class)
+        )).thenReturn(response);
+
+        String requestBody = """
+            {
+              "company": "Trendyol",
+              "position": "Backend Developer",
+              "status": "INTERVIEW",
+              "applicationDate": "2026-07-30"
+            }
+            """;
+
+        mockMvc.perform(
+                        put("/applications/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.company").value("Trendyol"))
+                .andExpect(jsonPath("$.position")
+                        .value("Backend Developer"))
+                .andExpect(jsonPath("$.status")
+                        .value("INTERVIEW"))
                 .andExpect(jsonPath("$.applicationDate")
                         .value("2026-07-30"));
     }
