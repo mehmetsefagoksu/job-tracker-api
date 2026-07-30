@@ -23,6 +23,8 @@ import static org.mockito.Mockito.verify;
 
 import com.sefa.jobtrackerapi.dto.JobApplicationRequest;
 
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class JobApplicationServiceTest {
 
@@ -102,5 +104,22 @@ class JobApplicationServiceTest {
 
         verify(jobApplicationRepository)
                 .save(any(JobApplication.class));
+    }
+    @Test
+    void shouldDeleteApplicationWhenIdExists() {
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setCompany("Trendyol");
+        application.setPosition("Java Backend Developer");
+        application.setStatus(JobApplicationStatus.APPLIED);
+        application.setApplicationDate(LocalDate.of(2026, 7, 30));
+
+        when(jobApplicationRepository.findById(1L))
+                .thenReturn(Optional.of(application));
+
+        jobApplicationService.deleteApplication(1L);
+
+        verify(jobApplicationRepository).findById(1L);
+        verify(jobApplicationRepository).delete(application);
     }
 }
