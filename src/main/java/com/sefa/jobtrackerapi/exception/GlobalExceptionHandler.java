@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -58,6 +59,22 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(errors);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleTypeMismatch(
+            MethodArgumentTypeMismatchException exception
+    ) {
+        Map<String, String> errors = new LinkedHashMap<>();
+
+        errors.put(
+                "message",
+                "status parametresi APPLIED, INTERVIEW, OFFER veya REJECTED olmalıdır"
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
     }
 }
