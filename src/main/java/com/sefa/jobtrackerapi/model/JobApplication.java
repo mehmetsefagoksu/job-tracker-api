@@ -28,7 +28,7 @@ public class JobApplication {
     @Column(nullable = false)
     private JobApplicationStatus status;
 
-    @Column(name = "application_date")
+    @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate;
 
     public JobApplication() {
