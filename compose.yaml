@@ -20,5 +20,20 @@ services:
       timeout: 5s
       retries: 10
 
+  app:
+    build: .
+    image: job-tracker-api
+    container_name: job-tracker-api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/jobtracker
+      DB_USERNAME: jobtracker
+      DB_PASSWORD: jobtracker
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
+
