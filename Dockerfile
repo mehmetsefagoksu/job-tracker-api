@@ -1,8 +1,17 @@
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:17-jdk AS build
 
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+COPY src/ src/
+RUN ./mvnw clean package -DskipTests
+
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/job-tracker-api-*.jar app.jar
 
 EXPOSE 8080
 
