@@ -1,6 +1,7 @@
 package com.sefa.jobtrackerapi.controller;
 
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+import com.sefa.jobtrackerapi.dto.ApplicationStatisticsResponse;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import com.sefa.jobtrackerapi.service.JobApplicationService;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,28 @@ class JobApplicationControllerTest {
 
     @MockitoBean
     private JobApplicationService jobApplicationService;
+
+    @Test
+    void shouldReturnApplicationStatistics() throws Exception {
+        ApplicationStatisticsResponse response =
+                new ApplicationStatisticsResponse(10L, 4L, 3L, 1L, 2L);
+
+        when(jobApplicationService.getApplicationStatistics())
+                .thenReturn(response);
+
+        mockMvc.perform(get("/applications/statistics"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON
+                ))
+                .andExpect(jsonPath("$.total").value(10))
+                .andExpect(jsonPath("$.applied").value(4))
+                .andExpect(jsonPath("$.interview").value(3))
+                .andExpect(jsonPath("$.offer").value(1))
+                .andExpect(jsonPath("$.rejected").value(2));
+
+        verify(jobApplicationService).getApplicationStatistics();
+    }
 
     @Test
     void shouldReturnApplicationWhenIdExists() throws Exception {

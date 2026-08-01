@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sefa.jobtrackerapi.dto.PageResponse;
+import com.sefa.jobtrackerapi.dto.ApplicationStatisticsResponse;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
@@ -51,6 +52,11 @@ public class JobApplicationController {
                 company,
                 pageable
         );
+    }
+
+    @GetMapping("/statistics")
+    public ApplicationStatisticsResponse getApplicationStatistics() {
+        return jobApplicationService.getApplicationStatistics();
     }
 
     @GetMapping("/{id}")

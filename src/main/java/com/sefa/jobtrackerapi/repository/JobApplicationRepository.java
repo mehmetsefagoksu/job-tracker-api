@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface JobApplicationRepository
         extends JpaRepository<JobApplication, Long> {
 
+    long countByStatus(JobApplicationStatus status);
+
     Page<JobApplication> findByStatus(
             JobApplicationStatus status,
             Pageable pageable

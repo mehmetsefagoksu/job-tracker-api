@@ -3,6 +3,7 @@ package com.sefa.jobtrackerapi.service;
 import com.sefa.jobtrackerapi.model.JobApplication;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
+import com.sefa.jobtrackerapi.dto.ApplicationStatisticsResponse;
 import org.springframework.stereotype.Service;
 
 import com.sefa.jobtrackerapi.exception.ResourceNotFoundException;
@@ -73,6 +74,24 @@ public class JobApplicationService {
                 responsePage.getTotalPages(),
                 responsePage.isFirst(),
                 responsePage.isLast()
+        );
+    }
+
+    public ApplicationStatisticsResponse getApplicationStatistics() {
+        return new ApplicationStatisticsResponse(
+                jobApplicationRepository.count(),
+                jobApplicationRepository.countByStatus(
+                        JobApplicationStatus.APPLIED
+                ),
+                jobApplicationRepository.countByStatus(
+                        JobApplicationStatus.INTERVIEW
+                ),
+                jobApplicationRepository.countByStatus(
+                        JobApplicationStatus.OFFER
+                ),
+                jobApplicationRepository.countByStatus(
+                        JobApplicationStatus.REJECTED
+                )
         );
     }
 

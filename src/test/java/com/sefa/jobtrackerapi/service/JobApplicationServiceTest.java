@@ -1,6 +1,7 @@
 package com.sefa.jobtrackerapi.service;
 
 import com.sefa.jobtrackerapi.dto.JobApplicationResponse;
+import com.sefa.jobtrackerapi.dto.ApplicationStatisticsResponse;
 import com.sefa.jobtrackerapi.model.JobApplication;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import com.sefa.jobtrackerapi.repository.JobApplicationRepository;
@@ -33,6 +34,42 @@ class JobApplicationServiceTest {
 
     @InjectMocks
     private JobApplicationService jobApplicationService;
+
+    @Test
+    void shouldReturnApplicationStatistics() {
+        when(jobApplicationRepository.count()).thenReturn(10L);
+        when(jobApplicationRepository.countByStatus(
+                JobApplicationStatus.APPLIED
+        )).thenReturn(4L);
+        when(jobApplicationRepository.countByStatus(
+                JobApplicationStatus.INTERVIEW
+        )).thenReturn(3L);
+        when(jobApplicationRepository.countByStatus(
+                JobApplicationStatus.OFFER
+        )).thenReturn(1L);
+        when(jobApplicationRepository.countByStatus(
+                JobApplicationStatus.REJECTED
+        )).thenReturn(2L);
+
+        ApplicationStatisticsResponse response =
+                jobApplicationService.getApplicationStatistics();
+
+        assertThat(response.total()).isEqualTo(10L);
+        assertThat(response.applied()).isEqualTo(4L);
+        assertThat(response.interview()).isEqualTo(3L);
+        assertThat(response.offer()).isEqualTo(1L);
+        assertThat(response.rejected()).isEqualTo(2L);
+
+        verify(jobApplicationRepository).count();
+        verify(jobApplicationRepository)
+                .countByStatus(JobApplicationStatus.APPLIED);
+        verify(jobApplicationRepository)
+                .countByStatus(JobApplicationStatus.INTERVIEW);
+        verify(jobApplicationRepository)
+                .countByStatus(JobApplicationStatus.OFFER);
+        verify(jobApplicationRepository)
+                .countByStatus(JobApplicationStatus.REJECTED);
+    }
 
     @Test
     void shouldReturnApplicationWhenIdExists() {
