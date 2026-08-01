@@ -16,11 +16,16 @@ import org.springframework.data.domain.Pageable;
 import com.sefa.jobtrackerapi.model.JobApplicationStatus;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sefa.jobtrackerapi.dto.PageResponse;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/applications")
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "http://localhost:5174"
+})
 public class JobApplicationController {
     private final JobApplicationService jobApplicationService;
     public JobApplicationController(
